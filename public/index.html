@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Docker Terminal</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.terminal/0.11.23/css/jquery.terminal.min.css" rel="stylesheet"/>
+        <style>
+            @keyframes blink {
+                0% { opacity: 1; }
+                25% { opacity: 0; }
+                50% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            @-webkit-keyframes blink {
+                0% { opacity: 1; }
+                25% { opacity: 0; }
+                50% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            @-ms-keyframes blink {
+                0% { opacity: 1; }
+                25% { opacity: 0; }
+                50% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            @-moz-keyframes blink {
+                0% { opacity: 1; }
+                25% { opacity: 0; }
+                50% { opacity: 0; }
+                100% { opacity: 1; }
+            }
+            .cmd .cursor.blink {
+                background: #0c0;
+                -webkit-animation: blink 1s infinite linear;
+                   -moz-animation: blink 1s infinite linear;
+                    -ms-animation: blink 1s infinite linear;
+                        animation: blink 1s linear infinite;
+                -webkit-box-shadow: 0 0 5px rgba(0,100,0,50);
+                   -moz-box-shadow: 0 0 5px rgba(0,100,0,50);
+                    -ms-box-shadow: 0 0 5px rgba(0,100,0,50);
+                     -o-box-shadow: 0 0 5px rgba(0,100,0,50);
+                        box-shadow: 0 0 5px rgba(0,100,0,50);
+            }
+        </style>
+    </head>
+    <body>
+        <script src="https://code.jquery.com/jquery-3.1.1.min.js" integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+        <script src="/jquery.mousewheel-min.js"></script>
+        <script src="/jquery.terminal-0.11.23.min.js"></script>
+        <script src="/unix_formatting.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            (function(){
+                var socket = io();
+
+                var terminal = $('body').terminal(function(command, term) {
+                    socket.emit('stdin', command);
+                    terminal.disable();
+                    terminal.find('.cursor').hide();
+                }, {
+                    greetings: 'Welcome to Docker Terminal',
+                    prompt: 'docker@container>',
+                    exit: false
+                });
+                        
+                socket.on('connect', function (data) {
+                    console.log('connected');
+                    terminal.enable();
+                    terminal.find('.cursor').show();
+                });
+                
+                socket.on('disconnect', function (data) {
+                    console.log('you have been disconnected');
+                    terminal.disable();
+                    terminal.error("connection lost");
+                    terminal.find('.cursor').hide();
+                });
+                
+                socket.on('reconnect', function (data) {
+                    console.log('you have been reconnected');
+                    terminal.enable();
+                    terminal.echo("connected");
+                    terminal.find('.cursor').show();
+                });
+                
+                socket.on('stdout', function (data) {
+                    terminal.echo(data);
+                });
+
+                socket.on('stderr', function (data) {
+                    terminal.error(data);
+                    terminal.enable();
+                    terminal.find('.cursor').show();
+                });
+                
+                socket.on('enable', function() {
+                    terminal.enable();
+                    terminal.find('.cursor').show();
+                });
+                
+                socket.on('disable', function() {
+                    terminal.disable();
+                    terminal.find('.cursor').hide();
+                });
+            })();
+        </script>
+    </body>
+</html>

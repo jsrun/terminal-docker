@@ -1,0 +1,20 @@
+{
+    "name": "terminal-docker",
+    "version": "0.0.1",
+    "author": "André Ferreira <andrehrf@gmail.com>",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/jsrun/terminal-docker"
+    },
+    "bugs": {
+        "url": "https://github.com/jsrun/terminal-docker/issues"
+    },
+    "homepage": "https://github.com/jsrun/terminal-docker",
+    "dependencies": {
+        "optimist": "^0.6.1",
+        "dockerode": "^2.3.1",
+        "socket.io": "^1.7.2",
+        "socket.io-stream": "^0.9.1",
+        "express": "^4.14.0"
+    }
+}
