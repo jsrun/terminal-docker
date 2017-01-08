@@ -100,25 +100,32 @@ function headlerContainer(container){
         }
     }); 
 
-    /*process.on('SIGINT', (code) => {
-        container.remove(function (err, data) {
-            console.log(data);
-            process.exit(0);
+    process.on('SIGINT', (code) => {
+        container.stop(function (err, data) {
+            container.remove(function (err, data) {
+                console.log(data);
+                process.exit(0);
+            });
         });
     });
 
-    process.on('SIGKILL', (code) => {
-        container.remove(function (err, data) {
-            console.log(data);
-            process.exit(0);
-        });
-    });
-
-    process.on('exit', (code) => {
-        container.remove(function (err, data) {
-            process.exit(0);
+    /*process.on('SIGKILL', (code) => {
+        container.stop(function (err, data) {
+            container.remove(function (err, data) {
+                console.log(data);
+                process.exit(0);
+            });
         });
     });*/
+
+    process.on('exit', (code) => {
+        container.stop(function (err, data) {
+            container.remove(function (err, data) {
+                console.log(data);
+                process.exit(0);
+            });
+        });
+    });
 }
 
 app.use(express.static('public'));
